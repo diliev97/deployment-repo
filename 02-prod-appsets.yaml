@@ -7,7 +7,7 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/yourorg/deployment-repo
-        revision: main
+        revision: master
         directories:
           - path: apps/*/base
   template:
@@ -20,9 +20,9 @@ spec:
         - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
-      source:
+      sources:
         - repoURL: https://github.com/yourorg/deployment-repo
-          targetRevision: main
+          targetRevision: master
           path: "apps/{{path.basename}}/base"
           helm:
             valueFiles:

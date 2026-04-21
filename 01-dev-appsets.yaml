@@ -7,7 +7,7 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/diliev97/deployment-repo
-        revision: main
+        revision: master
         directories:
           - path: apps/*/base
   template:
@@ -20,20 +20,13 @@ spec:
         - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
-      source:
+      sources:
         - repoURL: https://github.com/diliev97/deployment-repo
-          targetRevision: main
+          targetRevision: master
           path: "apps/{{path.basename}}/base"
           helm:
             valueFiles:
               - "apps/{{path.basename}}/overlays/dev/values.yaml"
-        - repoURL: https://github.com/diliev97/deployment-repo
-          targetRevision: main
-          path: apps/simple-app/overlays/dev/image-updater.yaml
-          helm:
-            parameters:
-              - name: image.tag
-                value: "dev"
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{path.basename}}"
