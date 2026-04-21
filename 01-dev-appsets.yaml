@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/yourorg/deployment-repo
+        repoURL: https://github.com/diliev97/deployment-repo
         revision: main
         directories:
           - path: apps/*/base
@@ -21,13 +21,13 @@ spec:
     spec:
       project: default
       source:
-        - repoURL: https://github.com/yourorg/deployment-repo
+        - repoURL: https://github.com/diliev97/deployment-repo
           targetRevision: main
           path: "apps/{{path.basename}}/base"
           helm:
             valueFiles:
               - "apps/{{path.basename}}/overlays/dev/values.yaml"
-        - repoURL: https://github.com/yourorg/deployment-repo
+        - repoURL: https://github.com/diliev97/deployment-repo
           targetRevision: main
           path: apps/simple-app/overlays/dev/image-updater.yaml
           helm:
