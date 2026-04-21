@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps-dev
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/yourorg/deployment-repo
+        revision: main
+        directories:
+          - path: apps/*/base
+  template:
+    metadata:
+      name: "{{path.basename}}"
+      labels:
+        app: "{{path.basename}}"
+        env: dev
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        - repoURL: https://github.com/yourorg/deployment-repo
+          targetRevision: main
+          path: "apps/{{path.basename}}/base"
+          helm:
+            valueFiles:
+              - "apps/{{path.basename}}/overlays/dev/values.yaml"
+        - repoURL: https://github.com/yourorg/deployment-repo
+          targetRevision: main
+          path: apps/simple-app/overlays/dev/image-updater.yaml
+          helm:
+            parameters:
+              - name: image.tag
+                value: "dev"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{path.basename}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

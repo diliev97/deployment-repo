@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps-prod
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/yourorg/deployment-repo
+        revision: main
+        directories:
+          - path: apps/*/base
+  template:
+    metadata:
+      name: "{{path.basename}}"
+      labels:
+        app: "{{path.basename}}"
+        env: prod
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        - repoURL: https://github.com/yourorg/deployment-repo
+          targetRevision: main
+          path: "apps/{{path.basename}}/base"
+          helm:
+            valueFiles:
+              - "apps/{{path.basename}}/overlays/prod/values.yaml"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{path.basename}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: false  # Disable auto-heal for prod - require manual approval
+          allowEmpty: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 5m

@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  tag: "dev"
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8000
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 128Mi
+
+nodeSelector:
+  environment: dev
+
+ingress:
+  enabled: false
