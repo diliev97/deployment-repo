@@ -3,6 +3,11 @@ replicaCount: 1
 image:
   tag: "dev"
 
+podAnnotations:
+  argocd-image-updater.argoproj.io/image-list: image=ghcr.io/diliev97/simple-app:*-dev
+  argocd-image-updater.argoproj.io/write-back-method: git
+  argocd-image-updater.argoproj.io/git-branch: master
+
 service:
   type: NodePort
   port: 80

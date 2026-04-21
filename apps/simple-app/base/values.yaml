@@ -13,9 +13,7 @@ serviceAccount:
   create: false
   name: ""
 
-podAnnotations:
-  argocd-image-updater.argoproj.io/image-list: image=ghcr.io/yourorg/simple-app
-  argocd-image-updater.argoproj.io/write-back-method: git
+podAnnotations: {}
 
 service:
   type: ClusterIP
