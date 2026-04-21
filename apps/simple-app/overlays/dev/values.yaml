@@ -1,7 +1,6 @@
 replicaCount: 1
 
-image:
-  tag: "dev"
+image: {}
 
 service:
   type: NodePort

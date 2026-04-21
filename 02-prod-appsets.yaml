@@ -25,7 +25,7 @@ spec:
     spec:
       project: default
       sources:
-        - repoURL: https://github.com/yourorg/deployment-repo
+        - repoURL: https://github.com/diliev97/deployment-repo
           targetRevision: master
           path: "apps/{{path[1]}}/base"
           helm:

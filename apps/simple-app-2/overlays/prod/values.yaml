@@ -1,7 +1,6 @@
 replicaCount: 2
 
 image:
-  tag: "prod"
 
 service:
   type: ClusterIP
