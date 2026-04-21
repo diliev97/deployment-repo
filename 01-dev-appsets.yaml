@@ -26,7 +26,7 @@ spec:
           path: "apps/{{path[1]}}/base"
           helm:
             valueFiles:
-              - "apps/{{path[1]}}/overlays/dev/values.yaml"
+              - "../overlays/dev/values.yaml"
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{path[1]}}"
