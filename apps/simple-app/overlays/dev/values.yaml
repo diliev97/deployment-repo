@@ -16,8 +16,8 @@ resources:
     cpu: 200m
     memory: 128Mi
 
-nodeSelector:
-  environment: dev
+#nodeSelector:
+#  environment: dev
 
 ingress:
   enabled: false
