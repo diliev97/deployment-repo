@@ -12,12 +12,16 @@ spec:
           - path: apps/*/base
   template:
     metadata:
-      name: "{{path[1]}}"
+      name: "{{path[1]}}-dev"
       labels:
         app: "{{path[1]}}"
         env: dev
       finalizers:
         - resources-finalizer.argocd.argoproj.io
+      annotations:
+        argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/{{path[1]}}:*-dev"
+        argocd-image-updater.argoproj.io/write-back-method: git
+        argocd-image-updater.argoproj.io/git-branch: master
     spec:
       project: default
       sources:
