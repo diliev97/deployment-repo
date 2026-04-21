@@ -12,9 +12,9 @@ spec:
           - path: apps/*/base
   template:
     metadata:
-      name: "{{path.basename}}"
+      name: "{{path[1]}}"
       labels:
-        app: "{{path.basename}}"
+        app: "{{path[1]}}"
         env: dev
       finalizers:
         - resources-finalizer.argocd.argoproj.io
@@ -23,13 +23,13 @@ spec:
       sources:
         - repoURL: https://github.com/diliev97/deployment-repo
           targetRevision: master
-          path: "apps/{{path.basename}}/base"
+          path: "apps/{{path[1]}}/base"
           helm:
             valueFiles:
-              - "apps/{{path.basename}}/overlays/dev/values.yaml"
+              - "apps/{{path[1]}}/overlays/dev/values.yaml"
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{path.basename}}"
+        namespace: "{{path[1]}}"
       syncPolicy:
         automated:
           prune: true
