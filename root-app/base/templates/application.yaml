@@ -1,0 +1,31 @@
+{{- $ := . -}}
+{{- range $appName, $env := .Values.apps }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $appName }}-{{ $env }}
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    root-app: "true"
+    app: {{ $appName }}
+    env: {{ $env }}
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/diliev97/deployment-repo
+    targetRevision: master
+    path: apps/{{ $appName }}/base
+    helm:
+      valueFiles:
+        - ../overlays/{{ $env }}/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ $appName }}-{{ $env }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{- end }}
