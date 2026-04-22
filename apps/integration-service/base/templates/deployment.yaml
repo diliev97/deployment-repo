@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "integration-service.fullname" . }}
+  labels:
+    {{- include "integration-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "integration-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "integration-service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "integration-service.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "integration-service.fullname" . }}-config
+          env:
+            - name: SSB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-client-secret
+            - name: SSB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-password
+            - name: SSB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-username
+            - name: SSB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-client-id
+            - name: SSB_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-base-url
+            - name: SSB_TOKEN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-token-url
+            - name: SSB_SCOPE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.ssbSecretName }}
+                  key: ssb-scope
+            - name: INTEGRATION_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "integration-service.fullname" . }}-config
+                  key: INTEGRATION_SERVICE_PORT
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image: {}
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8083
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+hpa:
+  enabled: false
+
+ingress:
+  enabled: false
+
+springProfiles: "dev"
+
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  ssbSecretName: "integration-service-ssb-credentials"
+  secretStoreName: "vault-backend"
+  secretStorePrefix: "secret/integration-service"
