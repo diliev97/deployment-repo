@@ -1,6 +1,9 @@
+fullnameOverride: "simple-app"
+
 replicaCount: 1
 
-image: {}
+image: 
+  tag: "latest"
 
 service:
   type: NodePort

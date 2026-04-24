@@ -21,7 +21,7 @@ spec:
       annotations:
         argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/{{path[1]}}:*-prod"
         argocd-image-updater.argoproj.io/write-back-method: git
-        argocd-image-updater.argoproj.io/git-branch: master
+        argocd-image-updater.argoproj.io/helm.write-back-target: "../overlays/prod/values.yaml"
     spec:
       project: default
       sources:
@@ -33,11 +33,11 @@ spec:
               - "../overlays/prod/values.yaml"
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{path[1]}}"
+        namespace: prod
       syncPolicy:
         automated:
           prune: true
-          selfHeal: false  # Disable auto-heal for prod - require manual approval
+          selfHeal: false
           allowEmpty: true
         syncOptions:
           - CreateNamespace=true

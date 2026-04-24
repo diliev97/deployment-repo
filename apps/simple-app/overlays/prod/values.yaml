@@ -1,3 +1,5 @@
+fullnameOverride: "simple-app"
+
 replicaCount: 2
 
 image: {}

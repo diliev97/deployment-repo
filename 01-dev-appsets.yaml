@@ -19,9 +19,11 @@ spec:
       finalizers:
         - resources-finalizer.argocd.argoproj.io
       annotations:
-        argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/{{path[1]}}:*-dev"
+        argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/{{path[1]}}"
         argocd-image-updater.argoproj.io/write-back-method: git
+        argocd-image-updater.argoproj.io/helm.write-back-target: "../overlays/dev/values.yaml"
         argocd-image-updater.argoproj.io/git-branch: master
+        argocd-image-updater.argoproj.io/image-update-strategy: latest
     spec:
       project: default
       sources:
@@ -33,7 +35,7 @@ spec:
               - "../overlays/dev/values.yaml"
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{path[1]}}"
+        namespace: dev
       syncPolicy:
         automated:
           prune: true

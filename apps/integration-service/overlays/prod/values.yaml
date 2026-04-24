@@ -38,6 +38,11 @@ ingress:
 
 springProfiles: "prod"
 
+ssb:
+  baseUrl: "https://ssb-prod.example.com"
+  tokenUrl: "https://ssb-auth-prod.example.com/oauth/token"
+  scope: "ssb"
+
 externalSecrets:
   enabled: true
   refreshInterval: 15m

@@ -45,50 +45,37 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "integration-service.fullname" . }}-config
           env:
-            - name: SSB_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.externalSecrets.ssbSecretName }}
-                  key: ssb-client-secret
-            - name: SSB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.externalSecrets.ssbSecretName }}
-                  key: ssb-password
-            - name: SSB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.externalSecrets.ssbSecretName }}
-                  key: ssb-username
+            - name: SSB_BASE_URL
+              value: "{{ .Values.ssb.baseUrl }}"
+            - name: SSB_TOKEN_URL
+              value: "{{ .Values.ssb.tokenUrl }}"
+            - name: SSB_SCOPE
+              value: "{{ .Values.ssb.scope }}"
             - name: SSB_CLIENT_ID
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalSecrets.ssbSecretName }}
                   key: ssb-client-id
-            - name: SSB_BASE_URL
+            - name: SSB_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalSecrets.ssbSecretName }}
-                  key: ssb-base-url
-            - name: SSB_TOKEN_URL
+                  key: ssb-client-secret
+            - name: SSB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalSecrets.ssbSecretName }}
-                  key: ssb-token-url
-            - name: SSB_SCOPE
+                  key: ssb-username
+            - name: SSB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalSecrets.ssbSecretName }}
-                  key: ssb-scope
+                  key: ssb-password
             - name: INTEGRATION_SERVICE_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "integration-service.fullname" . }}-config
-                  key: INTEGRATION_SERVICE_PORT
+              value: "{{ .Values.service.targetPort }}"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.springProfiles | default "local" }}"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

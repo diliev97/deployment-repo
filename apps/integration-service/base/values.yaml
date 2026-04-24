@@ -52,8 +52,14 @@ hpa:
   targetCPUUtilizationPercentage: 70
   targetMemoryUtilizationPercentage: 80
 
-# External Secrets Configuration
+# External Secrets Configuration - only for credentials
 externalSecrets:
   enabled: true
   refreshInterval: 1h
   ssbSecretName: "integration-service-ssb-credentials"
+
+# SSB Configuration (non-secret values in values.yaml)
+ssb:
+  baseUrl: ""
+  tokenUrl: ""
+  scope: "ssb"

@@ -23,6 +23,11 @@ ingress:
 
 springProfiles: "dev"
 
+ssb:
+  baseUrl: "https://ssb-dev.example.com"
+  tokenUrl: "https://ssb-auth-dev.example.com/oauth/token"
+  scope: "ssb"
+
 externalSecrets:
   enabled: true
   refreshInterval: 1h
