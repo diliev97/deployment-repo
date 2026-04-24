@@ -65,7 +65,9 @@ deployment-repo/
    - `apps/my-app/overlays/dev/values.yaml`
    - `apps/my-app/overlays/prod/values.yaml`
 
-5. Commit and push - the ApplicationSet will automatically create the ArgoCD Application
+5. **Important**: Set the initial image tag manually in the overlay `values.yaml` file. The ArgoCD Image Updater needs a baseline to compare against - it can only detect and update to new tags once an initial tag is already deployed.
+
+6. Commit and push - the ApplicationSet will automatically create the ArgoCD Application
 
 ## Setup Steps
 
@@ -155,6 +157,10 @@ annotations:
 - **git-branch**: Branch to commit changes to
 - **image-update-strategy**: Strategy for determining which tag to use (`latest`, `semver`, etc.)
 
+### Important: Initial Deployment
+
+The image tag **must be set manually** for the first deployment. The ArgoCD Image Updater can only detect and update to new tags once it has an existing deployed tag to compare against. After the initial deployment, Image Updater will automatically track and update the image when new tags are pushed to the registry.
+
 ## Prod vs Dev Differences
 
 | Setting | Dev | Prod |
@@ -166,3 +172,44 @@ annotations:
 | Ingress | Disabled | Enabled |
 
 See `overlays/dev/values.yaml` and `overlays/prod/values.yaml` for details.
+
+## Future Implementation: Environment-Specific Image Tags
+
+For non-prod environments added to the cluster (e.g., SIT, QA, staging) that share the same container registry, we can configure the CI job in each application source code repo to tag images with an environment suffix. This allows the Image Updater to deploy images to specific environments based on the tag suffix.
+
+### How It Works
+
+1. **CI Build Job**: Tags the image with environment suffix (e.g., `myapp:1.0.0-dev`, `myapp:1.0.0-sit`)
+
+2. **ApplicationSet**: Configure Image Updater to only track images matching the specific environment suffix using the `allow-tags` annotation
+
+### Example Configuration
+
+For a **dev** ApplicationSet:
+```yaml
+annotations:
+  argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/<app-name>"
+  argocd-image-updater.argoproj.io/image.allow-tags: "regexp:.*-dev$"
+  argocd-image-updater.argoproj.io/write-back-method: git
+  argocd-image-updater.argoproj.io/helm.write-back-target: "../overlays/dev/values.yaml"
+  argocd-image-updater.argoproj.io/git-branch: master
+  argocd-image-updater.argoproj.io/image-update-strategy: latest
+```
+
+For a **sit** ApplicationSet:
+```yaml
+annotations:
+  argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/<app-name>"
+  argocd-image-updater.argoproj.io/image.allow-tags: "regexp:.*-sit$"
+  argocd-image-updater.argoproj.io/write-back-method: git
+  argocd-image-updater.argoproj.io/helm.write-back-target: "../overlays/sit/values.yaml"
+  argocd-image-updater.argoproj.io/git-branch: master
+  argocd-image-updater.argoproj.io/image-update-strategy: latest
+```
+
+### Benefits
+
+- Single container registry for all environments
+- Clear separation between environment-specific images
+- Automatic deployment to the correct environment based on tag suffix
+- Can use same image-update-strategy (`latest`, `semver`, etc.) per environment
