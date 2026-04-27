@@ -24,6 +24,11 @@ spec:
         argocd-image-updater.argoproj.io/helm.write-back-target: "../overlays/dev/values.yaml"
         argocd-image-updater.argoproj.io/git-branch: master
         argocd-image-updater.argoproj.io/image-update-strategy: latest
+        notifications.argoproj.io/on-image-update: "ms-teams"
+        notifications.argoproj.io/on-sync-failed: "ms-teams"
+        notifications.argoproj.io/on-sync-succeeded: "ms-teams"
+        notifications.argoproj.io/on-health-degraded: "ms-teams"
+        notifications.argoproj.io/on-health-healthy: "ms-teams"
     spec:
       project: default
       sources:

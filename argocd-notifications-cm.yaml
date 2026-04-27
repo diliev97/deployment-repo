@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  template.ms-teams: |
+    {{if eq .serviceType "ms-teams"}}
+    {
+      "@type": "MessageCard",
+      "@context": "http://schema.org/extensions",
+      "themeColor": "{{if eq .app.status.health.status "Healthy"}}00FF00{{else}}FF0000{{end}}",
+      "summary": "{{.app.metadata.name}} - {{.app.status.operationState.phase}}",
+      "sections": [
+        {
+          "activityTitle": "ArgoCD Application: {{.app.metadata.name}}",
+          "activitySubtitle": "Namespace: {{.app.spec.destination.namespace}} | Environment: {{.app.metadata.labels.env}}",
+          "facts": [
+            {
+              "name": "Status:",
+              "value": "{{.app.status.health.status}}"
+            },
+            {
+              "name": "Sync Phase:",
+              "value": "{{.app.status.operationState.phase}}"
+            },
+            {
+              "name": "Initiated By:",
+              "value": "{{.app.status.operationState.operationInitiatedBy}}"
+            }
+          ]
+        },
+        {
+          "text": "**{{.app.status.operationState.phase}}** - {{.app.status.operationState.message}}"
+        }
+      ],
+      "potentialAction": [
+        {
+          "@type": "OpenUri",
+          "name": "View in ArgoCD",
+          "targets": [
+            {
+              "os": "default",
+              "uri": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}"
+            }
+          ]
+        }
+      ]
+    }
+    {{end}}

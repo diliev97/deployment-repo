@@ -22,6 +22,11 @@ spec:
         argocd-image-updater.argoproj.io/image-list: "image=ghcr.io/diliev97/{{path[1]}}:*-prod"
         argocd-image-updater.argoproj.io/write-back-method: git
         argocd-image-updater.argoproj.io/helm.write-back-target: "../overlays/prod/values.yaml"
+        notifications.argoproj.io/on-image-update: "ms-teams"
+        notifications.argoproj.io/on-sync-failed: "ms-teams"
+        notifications.argoproj.io/on-sync-succeeded: "ms-teams"
+        notifications.argoproj.io/on-health-degraded: "ms-teams"
+        notifications.argoproj.io/on-health-healthy: "ms-teams"
     spec:
       project: default
       sources:
