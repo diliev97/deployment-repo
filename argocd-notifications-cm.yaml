@@ -25,9 +25,22 @@ data:
               "value": "{{.app.status.operationState.phase}}"
             },
             {
+              "name": "Revision:",
+              "value": "{{or .app.status.operationState.syncResult.revision .app.status.sync.revision}}"
+            },
+            {
               "name": "Initiated By:",
               "value": "{{.app.status.operationState.operationInitiatedBy}}"
             }
+            {{range $index, $resource := .app.status.resources}}
+            {{if $resource.image}}
+            ,
+            {
+              "name": "Image:",
+              "value": "{{$resource.image}}"
+            }
+            {{end}}
+            {{end}}
           ]
         },
         {

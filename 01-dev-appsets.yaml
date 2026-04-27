@@ -29,6 +29,7 @@ spec:
         notifications.argoproj.io/on-sync-succeeded: "ms-teams"
         notifications.argoproj.io/on-health-degraded: "ms-teams"
         notifications.argoproj.io/on-health-healthy: "ms-teams"
+        notifications.argoproj.io/on-drift-detected: "ms-teams"
     spec:
       project: default
       sources:

@@ -11,14 +11,14 @@ data:
   trigger.on-image-update: |
     - when: >-
         app.status.operationState.phase == "Succeeded" and
-        app.status.operationState.operationInitiatedBy == "image-updater"
+        app.status.operationState.operationInitiatedBy matches ".*image-updater.*"
       send: [ms-teams]
       template: ms-teams
 
   trigger.on-sync-succeeded: |
     - when: >-
         app.status.operationState.phase == "Succeeded" and
-        app.status.operationState.operationInitiatedBy != "image-updater"
+        not(app.status.operationState.operationInitiatedBy matches ".*image-updater.*")
       send: [ms-teams]
       template: ms-teams
 
@@ -36,5 +36,10 @@ data:
     - when: >-
         app.status.health.status == "Healthy" and
         app.status.health.previousHealth == "Degraded"
+      send: [ms-teams]
+      template: ms-teams
+
+  trigger.on-drift-detected: |
+    - when: app.status.status == "OutOfSync"
       send: [ms-teams]
       template: ms-teams
