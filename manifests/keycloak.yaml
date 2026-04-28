@@ -1,0 +1,68 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: keycloak-dev
+  namespace: keycloak
+spec:
+  instances: 1
+  image: crdsk13bnxgweu.azurecr.io/keycloak/keycloak-bnxg:26.5.7
+  db:
+    vendor: mssql
+    url: jdbc:sqlserver://bnxg-dev-weu.4ed034e4d4bc.database.windows.net:1433;database=keycloak;
+    usernameSecret:
+      name: keycloak-db-secret-dev
+      key: username
+    passwordSecret:
+      name: keycloak-db-secret-dev
+      key: password
+  http:
+    httpEnabled: true
+    tlsSecret: dev-bnxg.dsk.az
+  hostname:
+    hostname: dev-bnxg.dsk.az
+  ingress:
+    enabled: false
+  unsupported:
+    podTemplate:
+      spec:
+        nodeSelector:
+          nodelabel: BNXGDev
+        volumes:
+          - name: secrets-store01-inline
+            csi:
+              driver: secrets-store.csi.k8s.io
+              readOnly: true
+              volumeAttributes:
+                secretProviderClass: "keycloak-secret-provider-class-dev"
+        containers:
+        - volumeMounts:
+          - name: secrets-store01-inline
+            mountPath: "/mnt/secrets-store"
+            readOnly: true
+          startupProbe:
+            failureThreshold: 600
+            httpGet:
+              path: /auth/health/started #/auth is added for compitability with older versions
+              port: 9000
+              scheme: HTTPS
+            periodSeconds: 1
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /auth/health/ready #/auth is added for compitability with older versions
+              port: 9000
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /auth/health/live #/auth is added for compitability with older versions
+              port: 9000
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1

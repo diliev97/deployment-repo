@@ -1,0 +1,24 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  gatewayClassName: {{ .Values.gateway.class }}
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: {{ .Values.gateway.httpPort }}
+      hostname: {{ .Values.gateway.hostname | quote }}
+    - name: https
+      protocol: HTTPS
+      port: {{ .Values.gateway.httpsPort }}
+      hostname: {{ .Values.gateway.hostname | quote }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ .Values.gateway.tlsSecretName }}
+            kind: Secret
+            namespace: {{ .Values.gateway.tlsSecretNamespace }}
+{{- end }}

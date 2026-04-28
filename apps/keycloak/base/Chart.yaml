@@ -1,0 +1,6 @@
+apiVersion: v2
+name: keycloak
+description: Keycloak (Operator CR) deployment with custom theme image and ExternalSecrets
+type: application
+version: 0.1.0
+appVersion: "1.1.0"

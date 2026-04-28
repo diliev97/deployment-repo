@@ -1,0 +1,8 @@
+namespace: dev
+
+image:
+  tag: "20260424.4"
+  repository: crdsk13bnxgweu.azurecr.io/keycloak/keycloak-bnxg
+
+nodeSelector:
+  nodelabel: BNXGDev

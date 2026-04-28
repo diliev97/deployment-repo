@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: BackendTLSPolicy
+metadata:
+  name: keycloak-tls-policy-dev
+  namespace: keycloak
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: keycloak-dev-service
+  validation:
+    hostname: keycloak-dev-service.keycloak.svc.cluster.local
+    caCertificateRefs:
+      - group: ""
+        kind: ConfigMap
+        name: ca.crt

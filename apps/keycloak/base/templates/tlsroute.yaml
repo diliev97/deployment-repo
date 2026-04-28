@@ -1,0 +1,20 @@
+{{- if .Values.tlsroute.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: TLSRoute
+metadata:
+  name: {{ .Values.tlsroute.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+    - name: {{ .Values.gateway.name }}
+      sectionName: {{ .Values.tlsroute.parentListenerName }}
+  hostnames:
+{{- range .Values.tlsroute.hostnames }}
+    - {{ . | quote }}
+{{- end }}
+  rules:
+    - backendRefs:
+        - name: {{ .Values.tlsroute.backend.serviceName }}
+          namespace: {{ .Values.tlsroute.backend.serviceNamespace }}
+          port: {{ .Values.tlsroute.backend.servicePort }}
+{{- end }}

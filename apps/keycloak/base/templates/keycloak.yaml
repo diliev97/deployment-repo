@@ -1,0 +1,62 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: {{ include "keycloak.fullname" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  instances: {{ .Values.keycloak.instances }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+
+  db:
+    vendor: {{ .Values.keycloak.db.vendor }}
+    url: {{ .Values.keycloak.db.url | quote }}
+    usernameSecret:
+      name: {{ .Values.keycloak.db.secretName }}
+      key: {{ .Values.keycloak.db.usernameKey }}
+    passwordSecret:
+      name: {{ .Values.keycloak.db.secretName }}
+      key: {{ .Values.keycloak.db.passwordKey }}
+
+  http:
+    httpEnabled: true
+    tlsSecret: {{ .Values.keycloak.tlsSecret }}
+
+  hostname:
+    hostname: {{ .Values.keycloak.hostname }}
+
+  ingress:
+    enabled: false
+
+  unsupported:
+    podTemplate:
+      spec:
+        nodeSelector:
+          {{- toYaml .Values.nodeSelector | nindent 10 }}
+        containers:
+          - startupProbe:
+              failureThreshold: 600
+              httpGet:
+                path: {{ .Values.keycloak.probes.startupPath }}
+                port: {{ .Values.keycloak.probes.managementPort }}
+                scheme: {{ .Values.keycloak.probes.scheme }}
+              periodSeconds: 1
+              successThreshold: 1
+              timeoutSeconds: 1
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: {{ .Values.keycloak.probes.readinessPath }}
+                port: {{ .Values.keycloak.probes.managementPort }}
+                scheme: {{ .Values.keycloak.probes.scheme }}
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: {{ .Values.keycloak.probes.livenessPath }}
+                port: {{ .Values.keycloak.probes.managementPort }}
+                scheme: {{ .Values.keycloak.probes.scheme }}
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1

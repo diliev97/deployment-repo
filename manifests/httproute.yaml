@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: keycloak-dev
+  namespace: keycloak
+spec:
+  hostnames:
+  - dev-bnxg.dsk.az
+  parentRefs:
+  - name: keycloak-dev
+  rules:
+  - matches:
+     - path:
+         type: PathPrefix
+         value: /auth    
+    backendRefs:
+     - name: keycloak-dev-service
+       namespace: keycloak
+       port: 8443
+  - matches:
+     - path:
+         type: PathPrefix
+         value: /auth/health/live    
+    backendRefs:
+     - name: keycloak-dev-service
+       namespace: keycloak
+       port: 9000
