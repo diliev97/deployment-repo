@@ -1,8 +1,39 @@
 namespace: dev
 
+keycloak:
+  hostname: dev-bnxg.dsk.az
+  tlsSecret: dev-bnxg.dsk.az
+
+  db:
+    url: "jdbc:sqlserver://bnxg-dev-weu.4ed034e4d4bc.database.windows.net:1433;database=keycloak;"
+    secretName: keycloak-db-secret-dev
+
 image:
   tag: "20260424.4"
   repository: crdsk13bnxgweu.azurecr.io/keycloak/keycloak-bnxg
+
+externalSecrets:
+  secretStoreName: aks18-bnxgdev-weu-keyvault
+  remote:
+    usernameSecretName: bnxg-dev-weu-kc-username
+    passwordSecretName: bnxg-dev-weu-kc-password
+  
+gateway:
+  enabled: true
+  hostname: dev-bnxg.dsk.az
+  tlsSecretName: dev-bnxg.dsk.az
+
+httproute:
+  enabled: true
+
+tlsroute:
+  hostnames:
+    - dev-bnxg.dsk.az
+  backend:
+    serviceNamespace: dev
+
+backendTlsPolicy:
+  validationHostname: keycloak.dev.svc.cluster.local
 
 nodeSelector:
   nodelabel: BNXGDev

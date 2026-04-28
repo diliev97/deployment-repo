@@ -18,7 +18,7 @@ spec:
       key: {{ .Values.keycloak.db.passwordKey }}
 
   http:
-    httpEnabled: true
+    httpEnabled: {{ .Values.keycloak.http.httpEnabled }}
     tlsSecret: {{ .Values.keycloak.tlsSecret }}
 
   hostname:

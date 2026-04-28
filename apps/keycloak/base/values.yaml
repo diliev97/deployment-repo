@@ -1,12 +1,10 @@
 keycloak:
   instances: 1
-  hostname: dev-bnxg.dsk.az
-  tlsSecret: dev-bnxg.dsk.az
+  http:
+    httpEnabled: true
 
   db:
     vendor: mssql
-    url: "jdbc:sqlserver://bnxg-dev-weu.4ed034e4d4bc.database.windows.net:1433;database=keycloak;"
-    secretName: keycloak-db-secret-dev
     usernameKey: username
     passwordKey: password
 
@@ -27,26 +25,32 @@ image:
 externalSecrets:
   enabled: true
   refreshInterval: 1h
-  secretStoreName: aks18-bnxgdev-weu-keyvault
-  targetSecretName: keycloak-db-secret-dev
-  remote:
-    usernameSecretName: bnxg-dev-weu-kc-username
-    passwordSecretName: bnxg-dev-weu-kc-password
+  targetSecretName: keycloak-db-secret
 
 gateway:
-  enabled: true
   class: traefik
-  hostname: dev-bnxg.dsk.az
   httpPort: 8000
   httpsPort: 8443
-  tlsSecretName: dev-bnxg.dsk.az
-  tlsSecretNamespace: dev
 
 httproute:
   name: keycloak
   enabled: false
   pathPrefix: /auth
-  serviceName: keycloak-service
+  serviceName: keycloak
   servicePort: 8443
+
+tlsroute:
+  enabled: false
+  name: keycloak-tlsroute
+  parentListenerName: tls
+  backend:
+    serviceName: keycloak
+    servicePort: 8443
+
+backendTlsPolicy:
+  enabled: false
+  name: keycloak-tls-policy
+  targetServiceName: keycloak
+  caConfigMapName: ca.crt
 
 nodeSelector: {}

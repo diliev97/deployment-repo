@@ -2,7 +2,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: {{ .name }}
+  name: {{ .Values.httproute.name }}
   namespace: {{ .Values.namespace }}
 spec:
   hostnames:
@@ -18,4 +18,12 @@ spec:
         - name: {{ .Values.httproute.serviceName }}
           namespace: {{ .Values.namespace }}
           port: {{ .Values.httproute.servicePort }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .Values.keycloak.probes.livenessPath }}
+      backendRefs:
+        - name: {{ .Values.httproute.serviceName }}
+          namespace: {{ .Values.namespace }}
+          port: {{ .Values.keycloak.probes.managementPort }}
 {{- end }}

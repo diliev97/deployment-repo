@@ -20,5 +20,5 @@ spec:
         certificateRefs:
           - name: {{ .Values.gateway.tlsSecretName }}
             kind: Secret
-            namespace: {{ .Values.gateway.tlsSecretNamespace }}
+            namespace: {{ .Values.namespace }}
 {{- end }}
